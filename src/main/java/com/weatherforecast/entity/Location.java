@@ -68,4 +68,16 @@ public class Location {
     public void setModifiedDate(Timestamp modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "locationId=" + locationId +
+                ", name='" + name + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", createdDate=" + createdDate +
+                ", modifiedDate=" + modifiedDate +
+                '}';
+    }
 }

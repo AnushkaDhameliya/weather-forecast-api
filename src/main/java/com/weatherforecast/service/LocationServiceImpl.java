@@ -2,6 +2,8 @@ package com.weatherforecast.service;
 
 
 import com.weatherforecast.entity.Location;
+import com.weatherforecast.exception.WebServiceDataNotFoundException;
+import com.weatherforecast.exception.WebServiceException;
 import com.weatherforecast.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,40 +17,65 @@ public class LocationServiceImpl implements LocationService{
     @Autowired
     private LocationRepository locationRepository;
 
-//    private static final org.apache.logging.log4j.Logger log =
-//            org.apache.logging.log4j.LogManager.getLogger(LocationService.class);
 
     @Override
     public List<Location> getAllLocations() {
-        return locationRepository.findAll();
+        try{
+            return locationRepository.findAll();
+        }
+        catch (Exception e){
+            throw new WebServiceException("Exception occurred while fetching locations. " + e.getMessage());
+        }
     }
 
     @Override
     public Location getLocationById(long id) {
-        Optional<Location> location = locationRepository.findById(id);
-        return location.orElse(null);
+        try{
+            Optional<Location> location = locationRepository.findById(id);
+            if(location.isPresent()){
+                return location.get();
+            }
+            throw new WebServiceDataNotFoundException("Location not found with id:" + id);
+        }
+        catch (Exception e){
+            throw new WebServiceException("Exception occurred while fetching location with locationId:" + id + ". "+ e.getMessage());
+        }
     }
 
     @Override
     public Location createLocation(Location location) {
-        return locationRepository.save(location);
+        try{
+            location.setLocationId(0L);
+            return locationRepository.save(location);
+        }
+        catch (Exception e){
+            throw new WebServiceException("Exception occurred while creating new location with data:" + location.toString() + ". " + e.getMessage());
+        }
     }
 
     @Override
     public Location updateLocation(Location location) {
-        Optional<Location> existing = locationRepository.findById(location.getLocationId());
-        if(existing.isPresent())
-            return locationRepository.save(location);
-        else
-            return null;
+        try{
+            Optional<Location> existing = locationRepository.findById(location.getLocationId());
+            if(existing.isPresent())
+                return locationRepository.save(location);
+            throw new WebServiceDataNotFoundException("Location not found with locationId:" + location.getLocationId());
+        }
+        catch (Exception e){
+            throw new WebServiceException("Exception occurred while updating the location with data:" + location.toString() + ". " + e.getMessage());
+        }
     }
 
     @Override
     public void deleteLocation(long id) {
         try{
-            locationRepository.deleteById(id);
+            Optional<Location> existing = locationRepository.findById(id);
+            if(existing.isPresent())
+                locationRepository.deleteById(id);
+            else
+                throw new WebServiceDataNotFoundException("Location not found with locationId:" + id);
         }catch (Exception e){
-            //log.error("Exception Occurred: " + e.getMessage());
+            throw new WebServiceException("Exception occurred while deleting the location with locationId:" + id + ". " + e.getMessage());
         }
     }
 }
