@@ -35,11 +35,11 @@ public class LocationServiceImpl implements LocationService{
             if(location.isPresent()){
                 return location.get();
             }
-            throw new WebServiceDataNotFoundException("Location not found with id:" + id);
         }
         catch (Exception e){
             throw new WebServiceException("Exception occurred while fetching location with locationId:" + id + ". "+ e.getMessage());
         }
+        throw new WebServiceDataNotFoundException("Location not found with id:" + id);
     }
 
     @Override
@@ -59,11 +59,11 @@ public class LocationServiceImpl implements LocationService{
             Optional<Location> existing = locationRepository.findById(location.getLocationId());
             if(existing.isPresent())
                 return locationRepository.save(location);
-            throw new WebServiceDataNotFoundException("Location not found with locationId:" + location.getLocationId());
         }
         catch (Exception e){
             throw new WebServiceException("Exception occurred while updating the location with data:" + location.toString() + ". " + e.getMessage());
         }
+        throw new WebServiceDataNotFoundException("Location not found with locationId:" + location.getLocationId());
     }
 
     @Override
@@ -72,10 +72,9 @@ public class LocationServiceImpl implements LocationService{
             Optional<Location> existing = locationRepository.findById(id);
             if(existing.isPresent())
                 locationRepository.deleteById(id);
-            else
-                throw new WebServiceDataNotFoundException("Location not found with locationId:" + id);
         }catch (Exception e){
             throw new WebServiceException("Exception occurred while deleting the location with locationId:" + id + ". " + e.getMessage());
         }
+        throw new WebServiceDataNotFoundException("Location not found with locationId:" + id);
     }
 }
