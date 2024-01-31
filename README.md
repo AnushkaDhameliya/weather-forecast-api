@@ -1,8 +1,8 @@
 ﻿# weather-forecast-api
 
-Third party source : https://www.weatherapi.com/
+**Third party source :** https://www.weatherapi.com/
 
-API endpoints:
+**API endpoints:**
 
 /locations                      (GET) => get all locations 
 
